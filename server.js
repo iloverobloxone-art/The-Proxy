@@ -1,19 +1,30 @@
 const express = require('express');
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const unblocker = require('unblocker');
 const app = express();
 
-app.use('/proxy', (req, res, next) => {
-  const url = req.query.url;
-  if (!url || !/^https?:\/\//.test(url)) {
-    return res.status(400).send("Missing or invalid url parameter");
-  }
-  createProxyMiddleware({
-    target: url,
-    changeOrigin: true,
-    pathRewrite: { '^/proxy': '' },
-    selfHandleResponse: false
-  })(req, res, next);
+// Unblocker middleware automatically rewrites URLs and assets
+app.use(unblocker({
+  prefix: '/proxy/', // Path prefix for proxied URLs
+  requestMiddleware: [
+    // Additional request middleware or logging (optional)
+  ],
+  responseMiddleware: [
+    // Additional response middleware (optional)
+  ]
+}));
+
+app.get('/', (req, res) => {
+  res.send(`
+    <html>
+      <head><title>Unblocker Proxy</title></head>
+      <body>
+        <h2>Game Proxy is Running!</h2>
+        <p>To use, go to: <br>
+        <a href="/proxy/https://yohoho.io">/proxy/https://yohoho.io</a><br>
+        Or any other game site.</p>
+      </body>
+    </html>
+  `);
 });
 
-app.get('/', (req, res) => res.send('Proxy server running!'));
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 8080);
