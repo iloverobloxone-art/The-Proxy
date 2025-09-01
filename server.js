@@ -7,11 +7,12 @@ app.use('/proxy', (req, res, next) => {
   if (!url || !/^https?:\/\//.test(url)) {
     return res.status(400).send("Missing or invalid url parameter");
   }
+  // Create a new proxy instance for each request with the correct target
   createProxyMiddleware({
     target: url,
     changeOrigin: true,
-    selfHandleResponse: false,
     pathRewrite: (path, req) => '/',
+    selfHandleResponse: false,
   })(req, res, next);
 });
 
