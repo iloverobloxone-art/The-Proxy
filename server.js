@@ -1,5 +1,6 @@
 const express = require('express');
 const Unblocker = require('unblocker');
+const unblocker = new Unblocker({ prefix: '/lol/' });
 
 const app = express();
 
