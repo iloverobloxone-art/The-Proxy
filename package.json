@@ -2,8 +2,8 @@
   "name": "advanced-game-proxy",
   "version": "1.0.0",
   "dependencies": {
-    "express": "^latest",
-    "unblocker": "^latest"
+    "express": "^5.1.0",
+    "unblocker": "^2.3.1"
   },
   "main": "server.js",
   "scripts": {
