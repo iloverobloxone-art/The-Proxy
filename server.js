@@ -1,21 +1,29 @@
 const express = require('express');
-const unblocker = require('unblocker');
+const Unblocker = require('unblocker');
+
 const app = express();
 
-app.use(unblocker({
-  prefix: '/proxy/'
-}));
+// Configure Unblocker; proxy URLs start with /proxy/
+const unblocker = new Unblocker({ prefix: '/proxy/' });
 
+// Must be early in middleware stack
+app.use(unblocker);
+
+// Optional: Home page with simple usage instructions
 app.get('/', (req, res) => {
   res.send(`
     <html>
-      <head><title>Unblocker Proxy on Vercel</title></head>
+      <head><title>Proxy is Running!</title></head>
       <body>
-        <h2>Game Proxy is Running on Vercel!</h2>
-        <p>Try visiting: <a href="/proxy/https://yohoho.io">/proxy/https://yohoho.io</a></p>
+        <h2>The proxy is live.</h2>
+        <p>To use, visit: <br>
+        <a href="/proxy/https://yohoho.io">/proxy/https://yohoho.io</a></p>
+        <p>Or replace with any other site you want to proxy.</p>
       </body>
     </html>
   `);
 });
 
-app.listen(process.env.PORT || 3000);
+// Listen for HTTP requests and WebSockets (required for full unblocker support)
+const server = app.listen(process.env.PORT || 8080);
+server.on('upgrade', unblocker.onUpgrade);
