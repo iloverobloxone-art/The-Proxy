@@ -1,15 +1,15 @@
 const express = require('express');
-const unblocker = new Unblocker({ prefix: '/school-approved/' });
+const Unblocker = require('unblocker'); // Correct import!
 
 const app = express();
 
-// Configure Unblocker; proxy URLs start with /proxy/
-const unblocker = new Unblocker({ prefix: '/proxy/' });
+// Use a neutral, non-proxy prefix to evade school keyword filters
+const unblocker = new Unblocker({ prefix: '/school-approved/' }); // Change this prefix as needed
 
-// Must be early in middleware stack
+// Register Unblocker middleware early in the stack
 app.use(unblocker);
 
-// Optional: Home page with simple usage instructions
+// Optional landing page with instructions
 app.get('/', (req, res) => {
   res.send(`
     <html>
@@ -17,13 +17,13 @@ app.get('/', (req, res) => {
       <body>
         <h2>The proxy is live.</h2>
         <p>To use, visit: <br>
-        <a href="/proxy/https://yohoho.io">/proxy/https://yohoho.io</a></p>
+        <a href="/school-approved/https://yohoho.io">/school-approved/https://yohoho.io</a></p>
         <p>Or replace with any other site you want to proxy.</p>
       </body>
     </html>
   `);
 });
 
-// Listen for HTTP requests and WebSockets (required for full unblocker support)
+// WebSockets support (required for full unblocker functionality)
 const server = app.listen(process.env.PORT || 8080);
 server.on('upgrade', unblocker.onUpgrade);
